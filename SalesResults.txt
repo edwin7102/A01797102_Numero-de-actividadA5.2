@@ -1,0 +1,2 @@
+Monto de ventas: 2,481.86
+Tiempo de ejecución: 0.0005 s

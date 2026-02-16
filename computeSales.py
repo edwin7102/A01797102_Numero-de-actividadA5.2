@@ -12,7 +12,6 @@ from pathlib import Path
 
 # Ruta del archivo de resultados
 SCRIPT_DIR = Path(__file__).resolve().parent
-RESULTS_FILENAME = SCRIPT_DIR / "SalesResults.txt"
 
 if len(sys.argv) != 3:
     print("Lo sentimos, número de argumentos incorrecto", file=sys.stderr)
@@ -28,6 +27,13 @@ console_errors = []
 if not path_cat.exists():
     print(f"No fue posible encontrar el archivo: {path_cat}", file=sys.stderr)
     sys.exit(1)
+
+
+data_folder = path_cat.resolve().parent
+results_folder = data_folder.parent / "results"
+results_folder.mkdir(parents=True, exist_ok=True)
+RESULTS_FILENAME = results_folder / "SalesResults.txt"
+
 try:
     with open(path_cat, "r", encoding="utf-8") as f:
         raw_catalogue = json.load(f)
@@ -106,8 +112,7 @@ else:
             console_errors.append("Cantidad no válida para el producto.")
             continue
         if qty < 0:
-            console_errors.append("Cantidad de ventas no puede ser negativa.")
-            continue
+            console_errors.append("Cantidad de ventas negativa.")
         product_key = str(product).strip()
         if product_key not in catalogue:
             console_errors.append("El código del producto no es válido.")
