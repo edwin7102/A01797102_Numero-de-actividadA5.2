@@ -8,14 +8,16 @@ import sys
 import time
 from pathlib import Path
 
-RESULTS_FILENAME = "SalesResults.txt"
+# Ruta del archivo de resultados: misma carpeta que este script
+SCRIPT_DIR = Path(__file__).resolve().parent
+RESULTS_FILENAME = SCRIPT_DIR / "SalesResults.txt"
 
 if len(sys.argv) != 3:
     print("Lo sentimos, el número de argumentos es incorrecto", file=sys.stderr)
     sys.exit(1)
 
-path_cat = Path(sys.argv[1])
-path_sales = Path(sys.argv[2])
+path_cat = SCRIPT_DIR / sys.argv[1]
+path_sales = SCRIPT_DIR / sys.argv[2]
 
 start_time = time.perf_counter()
 console_errors = []
@@ -77,3 +79,56 @@ except OSError as e:
     print(f"No fue posible leer el registro de ventas: {e}", file=sys.stderr)
     sys.exit(1)
 
+# Calcular total de ventas
+total = 0.0
+if not isinstance(sales_data, list):
+    console_errors.append("El formato de registro de ventas no es válido.")
+else:
+    for i, record in enumerate(sales_data):
+        if not isinstance(record, dict):
+            console_errors.append(
+                f"Formato del registro de ventas {i} no es válido."
+            )
+            continue
+        product = record.get("Product")
+        quantity = record.get("Quantity")
+        if product is None:
+            console_errors.append(f"No se encontró el producto en el registro de ventas.")
+            continue
+        if quantity is None:
+            console_errors.append(f"No se encontró la cantidad en el registro de ventas.")
+            continue
+        try:
+            qty = int(quantity)
+        except (TypeError, ValueError):
+            console_errors.append(
+                f"Cantidad no válida para el producto."
+            )
+            continue
+        if qty < 0:
+            console_errors.append(f"La cantidad de ventas no puede ser negativa.")
+            continue
+        product_key = str(product).strip()
+        if product_key not in catalogue:
+            console_errors.append(f"El código del producto no es válido.")
+            continue
+        total += catalogue[product_key] * qty
+
+elapsed = time.perf_counter() - start_time
+report = f"Monto total de ventas: {total:,.2f}\nTiempo de ejecución: {elapsed:.4f} s"
+
+if console_errors:
+    print("Se encontraron errores pero se continuará con la ejecución.", file=sys.stderr)
+    for msg in console_errors:
+        print(f"  - {msg}", file=sys.stderr)
+    print("", file=sys.stderr)
+
+print(report, flush=True)
+try:
+    with open(RESULTS_FILENAME, "w", encoding="utf-8") as f:
+        f.write(report)
+    print(f"Los resultados han sido almacenados correctamente", flush=True)
+except OSError as e:
+    print(f"Lo sentimos, no fue posible almacenar los resultados: {e}", file=sys.stderr)
+
+sys.exit(0)
