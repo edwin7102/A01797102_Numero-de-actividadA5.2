@@ -2,7 +2,7 @@
 # pylint: disable=invalid-name
 """
 Total de ventas desde catálogo de precios y registro de ventas.
-Nombre del módulo: computeSales (requerido por especificación).
+Nombre del archivo computeSales definido por requerimientos.
 """
 
 import json
@@ -10,7 +10,7 @@ import sys
 import time
 from pathlib import Path
 
-# Ruta del archivo de resultados: misma carpeta que este script
+# Ruta del archivo de resultados
 SCRIPT_DIR = Path(__file__).resolve().parent
 RESULTS_FILENAME = SCRIPT_DIR / "SalesResults.txt"
 
