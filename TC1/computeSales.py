@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
+# pylint: disable=invalid-name
 """
 Total de ventas desde catálogo de precios y registro de ventas.
+Nombre del módulo: computeSales (requerido por especificación).
 """
 
 import json
@@ -93,24 +95,22 @@ else:
         product = record.get("Product")
         quantity = record.get("Quantity")
         if product is None:
-            console_errors.append(f"No se encontró el producto en el registro de ventas.")
+            console_errors.append("No se encontró el producto en el registro de ventas.")
             continue
         if quantity is None:
-            console_errors.append(f"No se encontró la cantidad en el registro de ventas.")
+            console_errors.append("No se encontró la cantidad en el registro de ventas.")
             continue
         try:
             qty = int(quantity)
         except (TypeError, ValueError):
-            console_errors.append(
-                f"Cantidad no válida para el producto."
-            )
+            console_errors.append("Cantidad no válida para el producto.")
             continue
         if qty < 0:
-            console_errors.append(f"La cantidad de ventas no puede ser negativa.")
+            console_errors.append("La cantidad de ventas no puede ser negativa.")
             continue
         product_key = str(product).strip()
         if product_key not in catalogue:
-            console_errors.append(f"El código del producto no es válido.")
+            console_errors.append("El código del producto no es válido.")
             continue
         total += catalogue[product_key] * qty
 
@@ -127,7 +127,7 @@ print(report, flush=True)
 try:
     with open(RESULTS_FILENAME, "w", encoding="utf-8") as f:
         f.write(report)
-    print(f"Los resultados han sido almacenados correctamente", flush=True)
+    print("Los resultados han sido almacenados correctamente", flush=True)
 except OSError as e:
     print(f"Lo sentimos, no fue posible almacenar los resultados: {e}", file=sys.stderr)
 
